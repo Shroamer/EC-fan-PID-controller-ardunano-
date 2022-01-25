@@ -36,7 +36,7 @@ void UImain() { // main screen
   display.write(char(ICONtempGoal));
   printTemp(tempGoal, 1);
   if (setMode) {
-    //PID data
+    /*//PID data
     display.setTextSize(0);
     display.setCursor(50, 5);
     //display.print(F("PID"));
@@ -44,7 +44,7 @@ void UImain() { // main screen
     display.print(F(" "));
     display.print(PID_i * -1);
     display.print(F(" "));
-    display.print(PID_d * -1);
+    display.print(PID_d * -1);*/
     display.fillRect(SCREEN_WIDTH - map(truncInt(tempGoal, 0, 600), 0, 600, 0, 127), (SCREEN_HEIGHT / 2), SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   } else // not setMode
   {
@@ -679,6 +679,28 @@ void UIplotPid() {
   for (byte i = 1; i < 127; i += 5) { // draw horizontal lines of minPower and maxPower (start from x=1)
     if (minValY >= 0 && minValY < SCREEN_HEIGHT - 1)display.drawPixel(i, minValY, SSD1306_INVERSE);
     if (maxValY >= 0 && maxValY < SCREEN_HEIGHT - 1)display.drawPixel(i, maxValY, SSD1306_INVERSE);
+  }
+  display.display();
+}
+
+void UIhysteresisTime() {
+  if (encoderAction  && setMode) { // increment value
+    encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
+    hysteresisTimeS = scrollInt(hysteresisTimeS, encIncrement, 0, 3600, 1); // increment by 1sec
+  }
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(1, 1);
+  display.print(F("HYSTERESIS"));
+  display.setCursor(80, 17);
+  display.print(hysteresisTimeS);
+  display.setTextSize(1);
+  display.print(F("s"));
+  if (setMode) { // head barline
+    display.fillRect(0, SCREEN_HEIGHT / 2, truncInt(hysteresisTimeS, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  }
+  else {
+    display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
   display.display();
 }

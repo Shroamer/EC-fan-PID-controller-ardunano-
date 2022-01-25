@@ -4,7 +4,10 @@
 
 #define REV_NO "r2.2.4 25.01.22"
 /*
-  (c) Shroamer, dec`2021 (shroamer(at)gmail(dot)com)
+  (c) Shroamer, jan`2022 (shroamer(at)gmail(dot)com)
+25.01.22
+  r2.2.4
+    
 27.12.21
   r2.2.3
     + aproximate >1/x readings
@@ -129,15 +132,16 @@ byte arrayIndex = 0; // where we're in array
 #define UIPID_SCREEN 5
 #define UIPOWERMIN_SCREEN 6
 #define UIPOWERMAX_SCREEN 7
-#define UITADJ_SCREEN 8
-#define UITIMEOUT_SCREEN 9
-#define UISCREENROTATE_SCREEN 10
-#define UISTORESCREEN_SCREEN 11
-#define UISETSAVE_SCREEN 12 // value of save-settings screenmode, so we don't store this screen into memory
-#define UISETLOAD_SCREEN 13
-#define UIPLOTTEMP_SCREEN 14
-#define UIPLOTPID_SCREEN 15
-#define UICONST_SCREEN 16 // value of const-mode screenmode; set the last available ScreenMode to cycle
+#define UIHYSTERESISTIME 8
+#define UITADJ_SCREEN 9
+#define UITIMEOUT_SCREEN 10
+#define UISCREENROTATE_SCREEN 11
+#define UISTORESCREEN_SCREEN 12
+#define UISETSAVE_SCREEN 13 // value of save-settings screenmode, so we don't store this screen into memory
+#define UISETLOAD_SCREEN 14
+#define UIPLOTTEMP_SCREEN 15
+#define UIPLOTPID_SCREEN 16
+#define UICONST_SCREEN 17 // value of const-mode screenmode; set the last available ScreenMode to cycle
 
 #define ICONtempRead    0xb
 #define ICONtempGoal    0xc
@@ -191,6 +195,8 @@ byte minPower = 35;
 byte maxPower = 255;
 byte constPower = 96;
 
+unsigned int hysteresisTimeS=0;
+
 //   SENSOR FLAGS:
 bool sensFail = 0; // temperature sensor failed flag
 bool sensNewData=0; // we have new readings
@@ -200,22 +206,23 @@ int sensReadDelay = 750 / (1 << (12 - SENSOR_RESOLUTION));
 
 //   EEPROM data storage:
 // ***** ADD YOUR NEW EEprom VALUE ADDRESS HERE ***** (TODO)
-#define ADDR_tempGoal       0 // +2 int
-#define ADDR_kp             2 // +2 int
-#define ADDR_ki             4 // +2 int
-#define ADDR_kd             6 // +2 int
-#define ADDR_kpid           8 // +2 int
-#define ADDR_minPower       10 // +1 byte
-#define ADDR_maxPower       11 // +1 byte
-#define ADDR_isConstPower   12 // +1 byte
-#define ADDR_constPower     13 // +1 byte
-#define ADDR_tempAdj        14 // +2 int
-#define ADDR_timeOut        16 // +2 u_int
-#define ADDR_storeScreen    18 // +1 byte
-#define ADDR_displayRotate  19 // +1 byte
-#define ADDR_isAutoSave     20 // +1 byte
-#define ADDR_keepSample     21 // +1 byte
-#define ADDR_screenMode     1023 // byte, store it in the last bit 1023 = 0x3FF
+#define ADDR_tempGoal         0 // +2 int
+#define ADDR_kp               2 // +2 int
+#define ADDR_ki               4 // +2 int
+#define ADDR_kd               6 // +2 int
+#define ADDR_kpid             8 // +2 int
+#define ADDR_minPower         10 // +1 byte
+#define ADDR_maxPower         11 // +1 byte
+#define ADDR_isConstPower     12 // +1 byte
+#define ADDR_constPower       13 // +1 byte
+#define ADDR_tempAdj          14 // +2 int
+#define ADDR_timeOut          16 // +2 u_int
+#define ADDR_storeScreen      18 // +1 byte
+#define ADDR_displayRotate    19 // +1 byte
+#define ADDR_isAutoSave       20 // +1 byte
+#define ADDR_keepSample       21 // +1 byte
+#define ADDR_hysteresisTimeS  22 // +2 u_int
+#define ADDR_screenMode       1023 // byte, store it in the last bit 1023 = 0x3FF
 
 void setup() {
 #if defined(DEBUG_MODE)

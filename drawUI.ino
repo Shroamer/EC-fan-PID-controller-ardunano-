@@ -59,6 +59,10 @@ void drawUi() { // top-level UI routine
           if (isAutoSave) EEPROM.put(ADDR_maxPower, maxPower);
           break;
         }
+      case UIHYSTERESISTIME: {
+          if (isAutoSave) EEPROM.put(ADDR_hysteresisTimeS, hysteresisTimeS);
+          break;
+        }
       case UITADJ_SCREEN: {
           if (isAutoSave) EEPROM.put(ADDR_tempAdj, int(tempAdj));
           break;
