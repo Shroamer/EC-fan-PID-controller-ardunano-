@@ -13,13 +13,16 @@ UI input encoder with switch on interrupts
 ### Various variables and data can be set and read:
 - Goal temperature.
 - PID variables: **kP**, **kI**, **kD** and overall **multiplier** (0.01...100).
+- There is a **P+I+D math display** on multiplier screen for you to have deeper understanding of how your config works.
 - MinPower (some fans can't run at less than 5 or 10%)
 - MaxPower (sometimes you don't want fan to go full speed)
-- **Temperature offset** can be entered -9.9...9.9^ (0.1^ increment) if your sensor lies linearly.
-- **Display timeout** 0...999sec so oled display will last longer.
+- You can set **hysteresys delay** in seconds. Think of it as a _cool-down time you need to wait after turning fan off before turning it on again_. It prevents fan from going fast on-off at a margin values.
+- **Temperature offset** can be entered -9.0...9.0^ (0.1^ increment) if your sensor lies linearly.
+- **Display timeout** 0...600sec so oled display will last longer.
+- You can **turn image 180^** and encoder reading will be inverted.
 - Manual and automatic **store setting** to EEPROM on case of power loss.
 - You can avoid EEPROM degradation restricting to store current screen. It is convenient while configuring, but isn't needed after.
-- You can **turn image 180^** and encoder reading will be inverted.
+- You can play with PId parameters with AUSTOISAVE OFF, and then **restore settings from EEPROM**, or save new settings if new config is better.
 - **Temperature graph plot** show last 128 readings for diagnostics.
 - **PIDoutput graph plot** show last 128 output values, so you can diagnose and configure PID.
 - **Plot sampling rate** can be adjusted averaging up to 250 reading in a single data line in plot, so you can log longer periods. _(sample rate is approx. 3rps)_
@@ -27,8 +30,6 @@ UI input encoder with switch on interrupts
 - You can **manually set output rate**. This mode is stored into EEPROM to **return after power loss**. 
 - Device enters manual mode with last stored value **if temp. sensor is lost**.
 - Device enters manual mode **if screen has failed**.
-
-//i wrote this months after i finished project, sorry for any uncertainity or errors. 
 
 ![EC-FAN-pid controller r2 2_bb](https://user-images.githubusercontent.com/98293163/150709377-43f2c787-2473-4872-998f-7ee267ae28f0.png)
 ![EC-FAN-pid controller r2 2_schem](https://user-images.githubusercontent.com/98293163/150709451-bd5a9352-163f-49d2-b703-9abf2e3a6ef2.png)
