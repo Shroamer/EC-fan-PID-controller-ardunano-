@@ -14,8 +14,8 @@ void UImain() { // main screen
   if (encoderAction && setMode) { // adjust goal temp
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     tempGoal = scrollInt(tempGoal, encIncrement * 5, -250, 1200, 1); // roll goal temp by 0.5*c
-        if(!(tempGoal%5)){ //check if tempgoal is dividable by 5
-          tempGoal=(tempGoal/10)*10;
+        if(tempGoal%5){ //check if tempgoal is not dividable by 5
+          tempGoal-=1;
         }
   }
   display.clearDisplay();
