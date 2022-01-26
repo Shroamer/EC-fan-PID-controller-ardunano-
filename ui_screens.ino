@@ -14,13 +14,16 @@ void UImain() { // main screen
   if (encoderAction && setMode) { // adjust goal temp
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     tempGoal = scrollInt(tempGoal, encIncrement * 5, -250, 1200, 1); // roll goal temp by 0.5*c
+        if(!(tempGoal%5)){ //check if tempgoal is dividable by 5
+          tempGoal=(tempGoal/10)*10;
+        }
   }
   display.clearDisplay();
   //  if(!isConstPower) { // if PID is enabled instead of ConstantPower
   // display power
   display.setCursor(1, 1);
   display.setTextSize(1);
-  //display.print(F("P"));
+  //display.print("P");
   display.write(char(ICONoutput));
   display.setTextSize(2);
   display.print(map(PID_output, 0, 255, 0, 100));
@@ -28,11 +31,11 @@ void UImain() { // main screen
   //display online temperature
   display.setCursor(1, 17);
   display.setTextSize(1);
-  //display.print(F("t"));
+  //display.print("t");
   display.write(char(ICONtempRead));
   printTemp(tempIntC, 1);
   display.setCursor(65, 17);
-  //display.print(F("g"));
+  //display.print("g");
   display.write(char(ICONtempGoal));
   printTemp(tempGoal, 1);
   if (setMode) {
@@ -690,9 +693,9 @@ void UIhysteresisTime() {
   }
   display.clearDisplay();
   display.setTextSize(2);
-  display.setCursor(1, 1);
+  display.setCursor(4, 1);
   display.print(F("HYSTERESIS"));
-  display.setCursor(80, 17);
+  display.setCursor(70, 17);
   display.print(hysteresisTimeS);
   display.setTextSize(1);
   display.print(F("s"));

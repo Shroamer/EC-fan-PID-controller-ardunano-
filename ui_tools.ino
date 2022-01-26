@@ -23,7 +23,7 @@ void UIpidBar() { // PID info bar to the left of the screen. helps configure PID
   display.setCursor(9, 15);
   printTemp(PID_err * -1, 0);
   display.setCursor(9, 23); 
-  display.print(map(PID_output, 0, 255, 0, 100)); display.println("%");
+  display.print(map(PID_output, 0, 255, 0, 100)); display.println(F("%"));
   if (setMode) {
     switch (screenMode) { //locate marker
       case UIP_SCREEN:

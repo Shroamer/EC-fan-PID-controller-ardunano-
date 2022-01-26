@@ -2,7 +2,7 @@
 //#define DEBUG_LOCATE
 //#define BURN_NEW_EEPROM 1 // uncomment for the FIRST time you start with UPDATED EEprom struct (it will save a new defaults)
 
-#define REV_NO "r2.2.4 25.01.22"
+#define REV_NO "r2.2.4 27.01.22"
 /*
   (c) Shroamer, jan`2022 (shroamer(at)gmail(dot)com)
   25.01.22
@@ -198,7 +198,7 @@ byte constPower = 96;
 unsigned int hysteresisTimeS = 0; // store hysteresis time value in seconds
 unsigned long fanTurnedOffTimer = 0; // store timer value of last fan turn_off
 byte lastPIDvalue = 0; //last PID value to compare is anything changed
-bool hysteresisHold =0; // if==1 then keep output to 0
+bool hysteresisHold = 0; // if==1 then keep output to 0
 
 //   SENSOR FLAGS:
 bool sensFail = 0; // temperature sensor failed flag
@@ -281,21 +281,24 @@ void loop() {
     if (!isConstPower) {  //   PIDmode ACTION: calc PID, apply result (TODO - apply min/max to result)
       calculatePID();//make all necessary math involved in PID
       if (hysteresisTimeS) { // there is hysteresis set
-        if(!hysteresisHold){ //not hold
+        if (!hysteresisHold) { //not hold
           if (!PID_output && lastPIDvalue) { // if PID just went down
-            hysteresisHold=1; // rise hold flag
+            hysteresisHold = 1; // rise hold flag
             fanTurnedOffTimer = millis(); //store time of last turning off;
           }
         }
         else { //hold
-          if(PID_output && millis() > fanTurnedOffTimer+(hysteresisTimeS*1000L)){
-            hysteresisHold=0; // clear hold flag
+          if (PID_output && millis() > fanTurnedOffTimer + (hysteresisTimeS * 1000L)) {
+            hysteresisHold = 0; // clear hold flag
           }
         }
         lastPIDvalue = PID_output;
-        if(hysteresisHold) PID_output=0; // set output to 0 if still hold
+        if (hysteresisHold) {
+          if (!(screenMode == UIMAIN_SCREEN && setMode)) { // don't apply when we're setting goal temp
+            PID_output = 0; // set output to 0 if still hold
+          }
+        }
       }
-      
       setFanDim(255 - PID_output); //Now we can write the PWM signal to the FAN
     }
     else {                //   CONSTmode ACTION: apply constPower to output, set screenMode UICONST_SCREEN if not 0 (constpower settings)
