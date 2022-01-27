@@ -14,16 +14,14 @@ void UImain() { // main screen
   if (encoderAction && setMode) { // adjust goal temp
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     tempGoal = scrollInt(tempGoal, encIncrement * 5, -250, 1200, 1); // roll goal temp by 0.5*c
-        if(tempGoal%5){ //check if tempgoal is not dividable by 5
-          tempGoal-=1;
-        }
+    if (tempGoal % 5) { //check if tempgoal is not dividable by 5
+      tempGoal -= 1;
+    }
   }
   display.clearDisplay();
-  //  if(!isConstPower) { // if PID is enabled instead of ConstantPower
   // display power
   display.setCursor(1, 1);
   display.setTextSize(1);
-  //display.print("P");
   display.write(char(ICONoutput));
   display.setTextSize(2);
   display.print(map(PID_output, 0, 255, 0, 100));
@@ -40,14 +38,14 @@ void UImain() { // main screen
   printTemp(tempGoal, 1);
   if (setMode) {
     /*//PID data
-    display.setTextSize(0);
-    display.setCursor(50, 5);
-    //display.print(F("PID"));
-    display.print(PID_p * -1);
-    display.print(F(" "));
-    display.print(PID_i * -1);
-    display.print(F(" "));
-    display.print(PID_d * -1);*/
+      display.setTextSize(0);
+      display.setCursor(50, 5);
+      //display.print(F("PID"));
+      display.print(PID_p * -1);
+      display.print(F(" "));
+      display.print(PID_i * -1);
+      display.print(F(" "));
+      display.print(PID_d * -1);*/
     display.fillRect(SCREEN_WIDTH - map(truncInt(tempGoal, 0, 600), 0, 600, 0, 127), (SCREEN_HEIGHT / 2), SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   } else // not setMode
   {
