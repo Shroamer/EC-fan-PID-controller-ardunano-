@@ -2,7 +2,7 @@
 //#define DEBUG_LOCATE
 //#define BURN_NEW_EEPROM 1 // uncomment for the FIRST time you start with UPDATED EEprom struct (it will save a new defaults)
 
-#define REV_NO "r2.2.4 27.01.22"
+#define REV_NO "r2.2.4 29.01.22"
 /*
   (c) Shroamer, jan`2022 (shroamer(at)gmail(dot)com)
   25.01.22
