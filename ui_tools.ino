@@ -2,7 +2,7 @@ void printTemp(int tempDecaDegree, bool bigSize) { // prints tempDecaDegree in "
   int tempDegree = tempDecaDegree / 10;
   if (bigSize) display.setTextSize(2);
   else display.setTextSize(1);
-  if(tempDecaDegree<0&&tempDecaDegree>-10)display.print(F("-"));
+  if (tempDecaDegree < 0 && tempDecaDegree > -10)display.print(F("-"));
   display.print(tempDegree);
   if (bigSize) display.setTextSize(1);
   display.print(F("."));
@@ -22,10 +22,12 @@ void UIpidBar() { // PID info bar to the left of the screen. helps configure PID
   printTemp(tempGoal, 0);
   display.setCursor(9, 15);
   printTemp(PID_err * -1, 0);
-  display.setCursor(9, 23); 
-  display.print(map(PID_output, 0, 255, 0, 100)); display.println("%");
+  display.setCursor(9, 23);
+  display.print(map(PID_output, 0, 255, 0, 100)); display.println(F("%"));
+  
+  byte coordsList=screenMode-UIP_SCREEN;
   if (setMode) {
-    switch (screenMode) { //locate marker
+    /*switch (screenMode) { //locate marker
       case UIP_SCREEN:
         display.setCursor(44, 3);
         break;
@@ -38,11 +40,44 @@ void UIpidBar() { // PID info bar to the left of the screen. helps configure PID
       default:
         break;
     }
+    */
+    display.setCursor(coordsPIDarrow[coordsList][0], coordsPIDarrow[coordsList][0]);
     display.setTextSize(1);
-    //display.print(F(">"));
     display.print((char)ICONselect);
     display.fillRect(0, 0, 44, SCREEN_HEIGHT, SSD1306_INVERSE);
   }
+    // P display:
+  if(screenMode==UIP_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+  display.setCursor(coordsP[coordsList][0][0], coordsP[coordsList][0][1]); display.print(kp); //x50
+  if(screenMode==UIP_SCREEN) display.setTextSize(1);
+  display.setCursor(coordsP[coordsList][1][0], coordsP[coordsList][1][1]); display.print(F("P")); //x90
+  display.setCursor(coordsP[coordsList][2][0], coordsP[coordsList][2][1]); display.print(PID_p * -1);
+  // I display
+  if(screenMode==UII_SCREEN) display.setTextSize(2);
+  display.setCursor(coordsI[coordsList][0][0], coordsI[coordsList][0][1]); display.print(ki); //x60
+  if(screenMode==UII_SCREEN) display.setTextSize(1);
+  display.setCursor(coordsI[coordsList][1][0], coordsI[coordsList][1][1]); display.print(F("I")); //x90
+  display.setCursor(coordsI[coordsList][2][0], coordsI[coordsList][2][1]); display.print(PID_i * -1);
+  // D display
+  if(screenMode==UID_SCREEN) display.setTextSize(2);
+  display.setCursor(coordsD[coordsList][0][0], coordsD[coordsList][0][1]); display.print(kd); //x60
+  if(screenMode==UID_SCREEN) display.setTextSize(1);
+  display.setCursor(coordsD[coordsList][1][0], coordsD[coordsList][1][1]); display.print(F("D")); //x90
+  display.setCursor(coordsD[coordsList][2][0], coordsD[coordsList][2][1]); display.print(PID_d * -1);
+  
+  switch (screenMode) { // drawing 3 lines of PID data:
+      case UIP_SCREEN:
+        
+        break;
+      case UII_SCREEN:
+        
+        break;
+      case UID_SCREEN:
+        
+        break;
+      default:
+        break;
+    }
 }
 
 void UIpowerHead() { // header for power settings screens
@@ -54,6 +89,14 @@ void UIpowerHead() { // header for power settings screens
   display.write(char(ICONoutput));
   display.print(int(PID_output));
   if (!setMode) display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  
+  byte coordsList=screenMode-UIPOWERMIN_SCREEN;
+  if(screenMode==UIPOWERMIN_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+  display.setCursor(coordsMin[coordsList][0], coordsMin[coordsList][1]);
+  display.print(minPower);
+  if(screenMode==UIPOWERMAX_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+  display.setCursor(coordsMax[coordsList][0], coordsMax[coordsList][1]);
+  display.print(maxPower);
 }
 
 void screenTempArrayInit() { // init screenTempArray
@@ -78,36 +121,36 @@ void takePlotSample() { //   UI PLOT SCREEN SAMPLING:
     int passTemp; // temporary storing value to pass tp plotter
     int passPid; // temporary storing value to pass tp plotter
     //if (keepSampleIndex > 1) { // we have more than 1 sample to handle
-      // last addition and divide to get approx temp
-      //if(!sensFail) 
-      tempApproxSum += tempIntC;
-      //else tempApproxSum+=1250;
-      passTemp = tempApproxSum / keepSampleIndex;
-      tempApproxSum=0;
-      // last addition and divide to get approx power
-      if (isConstPower) powerApproxSum += constPower;
-      else powerApproxSum += PID_output;
-      passPid = powerApproxSum / keepSampleIndex;
-      powerApproxSum=0;
+    // last addition and divide to get approx temp
+    //if(!sensFail)
+    tempApproxSum += tempIntC;
+    //else tempApproxSum+=1250;
+    passTemp = tempApproxSum / keepSampleIndex;
+    tempApproxSum = 0;
+    // last addition and divide to get approx power
+    if (isConstPower) powerApproxSum += constPower;
+    else powerApproxSum += PID_output;
+    passPid = powerApproxSum / keepSampleIndex;
+    powerApproxSum = 0;
     /*}
-    else { // there is only one sample we have to store
-      //if(!sensFail) 
+      else { // there is only one sample we have to store
+      //if(!sensFail)
       passTemp = tempIntC; // temp sample addition
       //else passTemp=1250;
       if (isConstPower) passPid = constPower;
       else passPid = PID_output;
-    }*/    
+      }*/
     screenTempArray[arrayIndex] = passTemp; //ds18b20 can read -55...+125^C
     //if (isConstPower) screenPidArray[arrayIndex] = constPower; //PID_value or PID_output
-    //else 
+    //else
     screenPidArray[arrayIndex] = passPid; //PID_value or PID_output
     keepSampleIndex = 0;
   }
   else {
     //if (keepSample > 1) {
-      tempApproxSum += tempIntC;
-      if (isConstPower) powerApproxSum += constPower;
-      else powerApproxSum += PID_output;
+    tempApproxSum += tempIntC;
+    if (isConstPower) powerApproxSum += constPower;
+    else powerApproxSum += PID_output;
     //}
   }
 }

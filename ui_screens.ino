@@ -14,13 +14,14 @@ void UImain() { // main screen
   if (encoderAction && setMode) { // adjust goal temp
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     tempGoal = scrollInt(tempGoal, encIncrement * 5, -250, 1200, 1); // roll goal temp by 0.5*c
+    if (tempGoal % 5) { //check if tempgoal is not dividable by 5
+      tempGoal -= 1;
+    }
   }
   display.clearDisplay();
-  //  if(!isConstPower) { // if PID is enabled instead of ConstantPower
   // display power
   display.setCursor(1, 1);
   display.setTextSize(1);
-  //display.print(F("P"));
   display.write(char(ICONoutput));
   display.setTextSize(2);
   display.print(map(PID_output, 0, 255, 0, 100));
@@ -28,23 +29,23 @@ void UImain() { // main screen
   //display online temperature
   display.setCursor(1, 17);
   display.setTextSize(1);
-  //display.print(F("t"));
+  //display.print("t");
   display.write(char(ICONtempRead));
   printTemp(tempIntC, 1);
   display.setCursor(65, 17);
-  //display.print(F("g"));
+  //display.print("g");
   display.write(char(ICONtempGoal));
   printTemp(tempGoal, 1);
   if (setMode) {
-    //PID data
-    display.setTextSize(0);
-    display.setCursor(50, 5);
-    //display.print(F("PID"));
-    display.print(PID_p * -1);
-    display.print(F(" "));
-    display.print(PID_i * -1);
-    display.print(F(" "));
-    display.print(PID_d * -1);
+    /*//PID data
+      display.setTextSize(0);
+      display.setCursor(50, 5);
+      //display.print(F("PID"));
+      display.print(PID_p * -1);
+      display.print(F(" "));
+      display.print(PID_i * -1);
+      display.print(F(" "));
+      display.print(PID_d * -1);*/
     display.fillRect(SCREEN_WIDTH - map(truncInt(tempGoal, 0, 600), 0, 600, 0, 127), (SCREEN_HEIGHT / 2), SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   } else // not setMode
   {
@@ -187,7 +188,7 @@ void UIp() { // P-parameter set screen
   }
   display.clearDisplay();
   UIpidBar(); // display pid bar to the left
-  // P display:
+/*  // P display:
   display.setTextSize(2);
   display.setCursor(58, 0); display.print(kp); //x50
   display.setTextSize(1);
@@ -201,7 +202,7 @@ void UIp() { // P-parameter set screen
   display.setCursor(68, 24); display.print(kd); //x60
   display.setCursor(50, 24); display.print(F("D")); //x90
   display.setCursor(98, 24); display.print(PID_d * -1);
-
+*/
   display.display();
 }
 
@@ -212,7 +213,7 @@ void UIi() {
   }
   display.clearDisplay();
   UIpidBar(); // display pid bar to the left
-  // P display:
+/*  // P display:
   display.setCursor(68, 0); display.print(kp);
   display.setCursor(50, 0); display.print(F("P"));
   display.setCursor(98, 0); display.print(PID_p * -1);
@@ -226,6 +227,7 @@ void UIi() {
   display.setCursor(68, 24); display.print(kd);
   display.setCursor(50, 24); display.print(F("D"));
   display.setCursor(98, 24); display.print(PID_d * -1);
+  */
   display.display();
 }
 
@@ -236,6 +238,7 @@ void UId() {
   }
   display.clearDisplay();
   UIpidBar(); // display pid bar to the left
+  /*
   // P display:
   display.setCursor(68, 0); display.print(kp);
   display.setCursor(50, 0); display.print(F("P"));
@@ -250,6 +253,7 @@ void UId() {
   display.setTextSize(1);
   display.setCursor(50, 20); display.print(F("D"));
   display.setCursor(98, 20); display.print(PID_d * -1);
+  */
   display.display();
 }
 
@@ -260,12 +264,14 @@ void UIpowerMin() { // set min power
   }
   display.clearDisplay();
   UIpowerHead();
+  /*
   display.setTextSize(2);
   display.setCursor(1, 17);
   display.print(minPower);
   display.setTextSize(1);
   display.setCursor(95, 21);
   display.print(maxPower);
+  */
   if (setMode) { // head barline for minPower
     display.fillRect(0, SCREEN_HEIGHT / 2, minPower / 2, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
@@ -279,12 +285,14 @@ void UIpowerMax() { // set max power
   }
   display.clearDisplay();
   UIpowerHead();
+  /*
   display.setTextSize(1);
   display.setCursor(5, 21);
   display.print(minPower);
   display.setTextSize(2);
   display.setCursor(90, 17);
   display.print(maxPower);
+  */
   if (setMode) { // head barline for maxPower
     display.fillRect((maxPower / 2), SCREEN_HEIGHT / 2, SCREEN_WIDTH - (maxPower / 2), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
@@ -394,18 +402,19 @@ void UIconstMode() { // constant speed set
     isConstPower = 0;
   }
   display.clearDisplay();
+  //HEADER:
   display.setTextSize(2);
   display.setCursor(17, 1);
-  //HEADER:
   if (sensFail) {
     display.print(F("SENSFAIL"));
   }
   else {
     display.print(F("CONSTANT"));
   }
-  display.setCursor(80, 20);
   display.setTextSize(1);
+  // actual temp display:
   if (!sensFail) {
+    display.setCursor(80, 20);
     display.write(char(ICONtempRead));
     printTemp(tempIntC, 0);
   }
@@ -683,11 +692,33 @@ void UIplotPid() {
   display.display();
 }
 
+void UIhysteresisTime() {
+  if (encoderAction  && setMode) { // increment value
+    encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
+    hysteresisTimeS = scrollInt(hysteresisTimeS, encIncrement, 0, 3600, 1); // increment by 1sec
+  }
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(4, 1);
+  display.print(F("HYSTERESIS"));
+  display.setCursor(70, 17);
+  display.print(hysteresisTimeS);
+  display.setTextSize(1);
+  display.print(F("s"));
+  if (setMode) { // head barline
+    display.fillRect(0, SCREEN_HEIGHT / 2, truncInt(hysteresisTimeS, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  }
+  else {
+    display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  }
+  display.display();
+}
+
 void splashScreen() {
   display.clearDisplay(); // Clear the buffer
   display.setTextWrap(0);
   display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  display.setTextColor(SSD1306_INVERSE);        // Draw white text SSD1306_WHITE
   //display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
   display.setCursor(62, 0);            // Start at top-left corner
   display.println(F("0...10v PWM"));
@@ -715,6 +746,7 @@ void MSGwrongMode() {
   display.println(F("MODE"));
   display.display();
 }
+
 void MSGsensorFail() {
   display.clearDisplay();
   display.setTextSize(4);

@@ -59,6 +59,10 @@ void drawUi() { // top-level UI routine
           if (isAutoSave) EEPROM.put(ADDR_maxPower, maxPower);
           break;
         }
+      case UIHYSTERESISTIME: {
+          if (isAutoSave) EEPROM.put(ADDR_hysteresisTimeS, hysteresisTimeS);
+          break;
+        }
       case UITADJ_SCREEN: {
           if (isAutoSave) EEPROM.put(ADDR_tempAdj, int(tempAdj));
           break;
@@ -137,7 +141,7 @@ void drawUi() { // top-level UI routine
     }
     else {
       screenMode = screenLast;
-      Serial.print("ENC WAKE DUI");
+      //Serial.print("ENC WAKE DUI");
     }
   }
   switch (screenMode) { // ***** PUT NEW SCREEN HERE *****
@@ -164,6 +168,9 @@ void drawUi() { // top-level UI routine
       break;
     case UIPOWERMAX_SCREEN: // adjust max power
       UIpowerMax();
+      break;
+    case UIHYSTERESISTIME: // adjust hysteresis delay
+      UIhysteresisTime();
       break;
     case UITADJ_SCREEN: // adjust Tajd
       UItAdj();
