@@ -1,6 +1,8 @@
 # EC-fan-PID-controller-ardunano-
-2.2.4 going on
-last stable is r2.2.3
+2.2.4 stable
++ some minor improvements
++ added hysteresis function
++ code shrinking optimization
 
 PID controller to govern EC fan (0...10v PWM control line) as a PID temperature controller. 
 Termperature sensor is ds18b20 on 1-wire
