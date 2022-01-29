@@ -227,6 +227,38 @@ int sensReadDelay = 750 / (1 << (12 - SENSOR_RESOLUTION));
 #define ADDR_hysteresisTimeS  22 // +2 u_int
 #define ADDR_screenMode       1023 // byte, store it in the last bit 1023 = 0x3FF
 
+// coordinates for PID screen elements: //PROGMEM
+const byte coordsP[3][3][2] = {   // 3 screens(P,I,D), 3 elements(title,value,math), 2 coordinates(x,y)
+  {{58, 0}, {50, 3}, {98, 3}},    // for P screen
+  {{68, 0}, {50, 0}, {98, 0}},    // for I screen
+  {{68, 0}, {50, 0}, {98, 0}}     // for D screen
+};
+const byte coordsI[3][3][2] = {
+  {{68, 16}, {50, 16}, {98, 16}}, // for P screen
+  {{58, 8},  {50, 12}, {98, 12}}, // for I screen
+  {{68, 8},  {50, 8},  {98, 8}}   // for D screen
+};
+const byte coordsD[3][3][2] = {
+  {{68, 24}, {50, 24}, {98, 24}}, // for P screen
+  {{68, 24}, {50, 24}, {98, 24}}, // for I screen
+  {{58, 16}, {50, 20}, {98, 20}}  // for D screen
+};
+const byte coordsPIDarrow[3][2] ={ // PID arrow coordinates: 3 screens(P,I,D), 2 coordinates(x,y)
+  {44, 3}, // for P screen
+  {44, 12}, // for I screen
+  {44, 20}  // for D screen
+};
+
+// coordinates for min\max Power screen elements:
+const byte coordsMin[2][2]={ // 2 screens (min, max), 2 coordinates (x,y) 
+  {1, 17},
+  {5, 21}
+};
+const byte coordsMax[2][2]={ // 2 screens (min, max), 2 coordinates (x,y) 
+  {95, 21},
+  {90, 17}
+};
+
 void setup() {
 #if defined(DEBUG_MODE)
   Serial.begin(115200);
