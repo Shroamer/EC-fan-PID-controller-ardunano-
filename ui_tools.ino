@@ -24,8 +24,8 @@ void UIpidBar() { // PID info bar to the left of the screen. helps configure PID
   printTemp(PID_err * -1, 0);
   display.setCursor(9, 23);
   display.print(map(PID_output, 0, 255, 0, 100)); display.println(F("%"));
-  
-  byte coordsList=screenMode-UIP_SCREEN;
+
+  byte coordsList = screenMode - UIP_SCREEN;
   if (setMode) {
     /*switch (screenMode) { //locate marker
       case UIP_SCREEN:
@@ -39,45 +39,45 @@ void UIpidBar() { // PID info bar to the left of the screen. helps configure PID
         break;
       default:
         break;
-    }
+      }
     */
     display.setCursor(coordsPIDarrow[coordsList][0], coordsPIDarrow[coordsList][0]);
     display.setTextSize(1);
     display.print((char)ICONselect);
     display.fillRect(0, 0, 44, SCREEN_HEIGHT, SSD1306_INVERSE);
   }
-    // P display:
-  if(screenMode==UIP_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+  // P display:
+  if (screenMode == UIP_SCREEN) display.setTextSize(2); else display.setTextSize(1);
   display.setCursor(coordsP[coordsList][0][0], coordsP[coordsList][0][1]); display.print(kp); //x50
-  if(screenMode==UIP_SCREEN) display.setTextSize(1);
+  if (screenMode == UIP_SCREEN) display.setTextSize(1);
   display.setCursor(coordsP[coordsList][1][0], coordsP[coordsList][1][1]); display.print(F("P")); //x90
   display.setCursor(coordsP[coordsList][2][0], coordsP[coordsList][2][1]); display.print(PID_p * -1);
   // I display
-  if(screenMode==UII_SCREEN) display.setTextSize(2);
+  if (screenMode == UII_SCREEN) display.setTextSize(2);
   display.setCursor(coordsI[coordsList][0][0], coordsI[coordsList][0][1]); display.print(ki); //x60
-  if(screenMode==UII_SCREEN) display.setTextSize(1);
+  if (screenMode == UII_SCREEN) display.setTextSize(1);
   display.setCursor(coordsI[coordsList][1][0], coordsI[coordsList][1][1]); display.print(F("I")); //x90
   display.setCursor(coordsI[coordsList][2][0], coordsI[coordsList][2][1]); display.print(PID_i * -1);
   // D display
-  if(screenMode==UID_SCREEN) display.setTextSize(2);
+  if (screenMode == UID_SCREEN) display.setTextSize(2);
   display.setCursor(coordsD[coordsList][0][0], coordsD[coordsList][0][1]); display.print(kd); //x60
-  if(screenMode==UID_SCREEN) display.setTextSize(1);
+  if (screenMode == UID_SCREEN) display.setTextSize(1);
   display.setCursor(coordsD[coordsList][1][0], coordsD[coordsList][1][1]); display.print(F("D")); //x90
   display.setCursor(coordsD[coordsList][2][0], coordsD[coordsList][2][1]); display.print(PID_d * -1);
-  
-  switch (screenMode) { // drawing 3 lines of PID data:
+  /*
+    switch (screenMode) { // drawing 3 lines of PID data:
       case UIP_SCREEN:
-        
+
         break;
       case UII_SCREEN:
-        
+
         break;
       case UID_SCREEN:
-        
+
         break;
       default:
         break;
-    }
+    }*/
 }
 
 void UIpowerHead() { // header for power settings screens
@@ -87,16 +87,45 @@ void UIpowerHead() { // header for power settings screens
   display.setTextSize(1);
   display.setCursor(56, 21);
   display.write(char(ICONoutput));
-  display.print(int(PID_output));
+  display.print(int(outVal));
   if (!setMode) display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
-  
-  byte coordsList=screenMode-UIPOWERMIN_SCREEN;
-  if(screenMode==UIPOWERMIN_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+
+  byte coordsList = screenMode - UIPOWERMIN_SCREEN;
+  if (screenMode == UIPOWERMIN_SCREEN) display.setTextSize(2); else display.setTextSize(1);
   display.setCursor(coordsMin[coordsList][0], coordsMin[coordsList][1]);
   display.print(minPower);
-  if(screenMode==UIPOWERMAX_SCREEN) display.setTextSize(2); else display.setTextSize(1);
+  if (screenMode == UIPOWERMAX_SCREEN) display.setTextSize(2); else display.setTextSize(1);
   display.setCursor(coordsMax[coordsList][0], coordsMax[coordsList][1]);
   display.print(maxPower);
+}
+
+void UIdestagHead() {
+  display.setTextSize(2);
+  display.setCursor(1, 1);
+  display.print(F("DEST "));
+  display.setTextSize(1);
+  if (screenMode == UIDESTAGPERIOD_SCREEN) display.print(F("period"));
+  else display.print(F("time"));
+  
+  if (!setMode) display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+
+  display.setTextSize(2);
+  display.setCursor(1, 17);
+  if (screenMode == UIDESTAGPERIOD_SCREEN) {
+    display.print(DESTperiod);
+    display.print(F("m"));
+  }
+  else { //UIDESTAGTIME_SCREEN
+    display.print(DESTtime);
+    display.print(F("s"));
+  }
+  if (DESTperiod && DESTtime) {
+    display.setTextSize(1);
+    display.setCursor(72, 21);
+    unsigned long timeNow = millis();
+    if (screenMode == UIDESTAGPERIOD_SCREEN) display.print(long(timeNow - (DESTcycleStart + (DESTperiod * DEST_PERIOD_MULT)) ) / 1000);
+    else display.print(long(timeNow - (DESTcycleStart + (DESTperiod * DEST_PERIOD_MULT) + (DESTtime * DEST_TIME_MULT)) ) / 1000);
+  }
 }
 
 void screenTempArrayInit() { // init screenTempArray
@@ -116,41 +145,26 @@ void screenPidArrayInit() { // init screenTempArray
 void takePlotSample() { //   UI PLOT SCREEN SAMPLING:
   keepSampleIndex++; //increment keep smaple index
   if (keepSampleIndex >= keepSample) { //take a sample if should
-    if (arrayIndex < 127) arrayIndex++; //increment index
-    else arrayIndex = 0;
+    if (arrayIndex < 127) arrayIndex++; //increment array index
+    else arrayIndex = 0; //reset array index
     int passTemp; // temporary storing value to pass tp plotter
     int passPid; // temporary storing value to pass tp plotter
-    //if (keepSampleIndex > 1) { // we have more than 1 sample to handle
-    // last addition and divide to get approx temp
     //if(!sensFail)
-    tempApproxSum += tempIntC;
+    tempApproxSum += tempIntC; // adding last sens data
     //else tempApproxSum+=1250;
-    passTemp = tempApproxSum / keepSampleIndex;
-    tempApproxSum = 0;
-    // last addition and divide to get approx power
-    if (isConstPower) powerApproxSum += constPower;
-    else powerApproxSum += PID_output;
+    passTemp = tempApproxSum / keepSampleIndex; // dividing sum of sample temperatures by sample count to pass an average
+    tempApproxSum = 0; // resetting sum vriable for the next sample collection
+    if (isConstPower) powerApproxSum += constPower; // last addition and divide to get approx power
+    else powerApproxSum += outVal;
     passPid = powerApproxSum / keepSampleIndex;
     powerApproxSum = 0;
-    /*}
-      else { // there is only one sample we have to store
-      //if(!sensFail)
-      passTemp = tempIntC; // temp sample addition
-      //else passTemp=1250;
-      if (isConstPower) passPid = constPower;
-      else passPid = PID_output;
-      }*/
     screenTempArray[arrayIndex] = passTemp; //ds18b20 can read -55...+125^C
-    //if (isConstPower) screenPidArray[arrayIndex] = constPower; //PID_value or PID_output
-    //else
     screenPidArray[arrayIndex] = passPid; //PID_value or PID_output
     keepSampleIndex = 0;
   }
-  else {
-    //if (keepSample > 1) {
+  else { // just summing data for approximization
     tempApproxSum += tempIntC;
     if (isConstPower) powerApproxSum += constPower;
-    else powerApproxSum += PID_output;
-    //}
+    else powerApproxSum += outVal;
   }
 }

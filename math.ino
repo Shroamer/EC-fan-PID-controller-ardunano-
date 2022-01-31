@@ -9,10 +9,10 @@ int scrollInt(int incVar, int incVal, int minVal, int maxVal, bool cycle) {
   if (cycle) {
     while (incTemp < minVal || incTemp > maxVal) {
       if (incTemp > maxVal) { //turn around right
-        incTemp -= maxVal;
+        incTemp -= maxVal-minVal+1;
       }
       if (incTemp < minVal) {
-        incTemp += maxVal;
+        incTemp += maxVal-minVal+1;
       }
     }
   }

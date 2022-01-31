@@ -1,7 +1,8 @@
 void drawUi() { // top-level UI routine
-  if (screenMode) { // wake screen if not should be turned off (screenMode!=0)
+  /*if (screenMode) { // wake screen if not should be turned off (screenMode!=0)
     wakeScreen();
   }
+  */
   if (switchAction && !setMode) { // ***** PUT PRELOAD SET DATA HERE ***** SWITCH is pressed in select mode - enter setMode
     setMode = 1;
     switch (screenMode) {
@@ -59,8 +60,16 @@ void drawUi() { // top-level UI routine
           if (isAutoSave) EEPROM.put(ADDR_maxPower, maxPower);
           break;
         }
-      case UIHYSTERESISTIME: {
-          if (isAutoSave) EEPROM.put(ADDR_hysteresisTimeS, hysteresisTimeS);
+      case UIHYSTERESISTIME_SCREEN: {
+          if (isAutoSave) EEPROM.put(ADDR_HYSTtime, HYSTtime);
+          break;
+        }
+      case UIDESTAGTIME_SCREEN: {
+          if (isAutoSave) EEPROM.put(ADDR_DESTtime, DESTtime);
+          break;
+        }
+      case UIDESTAGPERIOD_SCREEN: {
+          if (isAutoSave) EEPROM.put(ADDR_DESTperiod, DESTperiod);
           break;
         }
       case UITADJ_SCREEN: {
@@ -144,6 +153,10 @@ void drawUi() { // top-level UI routine
       //Serial.print("ENC WAKE DUI");
     }
   }
+  if(screenMode){
+    wakeScreen(); // wake screen if not should be turned off (screenMode!=0)
+    display.clearDisplay();
+  }
   switch (screenMode) { // ***** PUT NEW SCREEN HERE *****
     case 0: // sleep mode
       UIsleepRoutine();
@@ -169,8 +182,14 @@ void drawUi() { // top-level UI routine
     case UIPOWERMAX_SCREEN: // adjust max power
       UIpowerMax();
       break;
-    case UIHYSTERESISTIME: // adjust hysteresis delay
+    case UIHYSTERESISTIME_SCREEN: // adjust hysteresis delay
       UIhysteresisTime();
+      break;
+    case UIDESTAGTIME_SCREEN: // adjust destag time
+      UIdestagTime();
+      break;
+    case UIDESTAGPERIOD_SCREEN: // adjust destag period
+      UIdestagPeriod();
       break;
     case UITADJ_SCREEN: // adjust Tajd
       UItAdj();
@@ -205,6 +224,7 @@ void drawUi() { // top-level UI routine
       screenMode = 1;
       break;
   }
+  if(screenMode) display.display();
   //switchAction = 0;
   //nullEncoder(); // reset encoder state/flag
 }

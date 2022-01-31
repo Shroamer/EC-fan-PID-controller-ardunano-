@@ -14,7 +14,9 @@ void settingsPut() { // store current settings to EEPROM
   EEPROM.put(ADDR_displayRotate, displayRotate);
   EEPROM.put(ADDR_isAutoSave, isAutoSave);
   EEPROM.put(ADDR_keepSample, keepSample);
-  EEPROM.put(ADDR_hysteresisTimeS, hysteresisTimeS);
+  EEPROM.put(ADDR_HYSTtime, HYSTtime);  
+  EEPROM.put(ADDR_DESTtime, DESTtime);
+  EEPROM.put(ADDR_DESTperiod, DESTperiod);
   //EEPROM.put(ADDR_screenMode, screenMode);
 }
 
@@ -36,7 +38,9 @@ void settingsGet() { // restore settings from EEPROM
   EEPROM.get(ADDR_isAutoSave, isAutoSave);
   EEPROM.get(ADDR_keepSample, keepSample);
   EEPROM.get(ADDR_screenMode, screenMode);
-  EEPROM.get(ADDR_hysteresisTimeS, hysteresisTimeS);
+  EEPROM.get(ADDR_HYSTtime, HYSTtime);
+  EEPROM.get(ADDR_DESTtime, DESTtime);
+  EEPROM.get(ADDR_DESTperiod, DESTperiod);
 }
 
 byte EEstoreScreenGet() { //get setting, so we can show saved value first

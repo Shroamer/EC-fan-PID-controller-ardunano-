@@ -3,6 +3,16 @@ PID controller to govern EC fan (0...10v PWM control line) as a PID temperature 
 Termperature sensor is ds18b20 on 1-wire
 UI oled screen 128x32 ssd1306 on i2c
 UI input encoder with switch on interrupts
+
+r2.2.5
+beta (in test)
+ + fixed hysteresis function (don't let fan to turn on for some time after it turned off)
+ + added destagnation function (turn fan to minPower for some time if no fan activity was found past some time)
+ + power icon now can morph to HYST and DEST icons if in these modes.
+ + fixed issue with rapid plot overflow while screen is turned off. Now plot array is fulfilled more evenly.
+ + fixed value overflow in cycling thru variables
+
+
 ### The device is used to govern EC fan thru 0...10v control line using temperature reading from ds18b20 digital sensor.
 - It utilize **ssd1306 128x32 oled display** to show various data and plot graphs.
 - Use **encoder with button** to roll thru displays and enter settings. _(with acceleration)_
@@ -17,6 +27,7 @@ UI input encoder with switch on interrupts
 - MinPower (some fans can't run at less than 5 or 10%)
 - MaxPower (sometimes you don't want fan to go full speed)
 - You can set **hysteresys delay** in seconds. Think of it as a _cool-down time you need to wait after turning fan off before turning it on again_. It prevents fan from going fast on-off at a margin values.
+- There is a destagnant ventilation function that can run fan for a while if no fan activity was found recently. This prevents air from stagnation even there's no need to cool.
 - **Temperature offset** can be entered -9.0...9.0^ (0.1^ increment) if your sensor lies linearly.
 - **Display timeout** 0...600sec so oled display will last longer.
 - You can **turn image 180^** and encoder reading will be inverted.

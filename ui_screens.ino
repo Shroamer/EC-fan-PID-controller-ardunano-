@@ -5,7 +5,8 @@ void UIsleepRoutine() { // routine for sleep mode
     switchAction = 0; //reset flag after action
   }
   if (encoderAction) { // encoder is turned when sleep - wake up into last screen
-    encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
+    //encIncrement = nullEncoder();// retrieve increment data and reset encoder state/flag
+    nullEncoder(); // reset encoder state/flag
     screenMode = screenLast;
   }
 }
@@ -18,14 +19,17 @@ void UImain() { // main screen
       tempGoal -= 1;
     }
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   // display power
   display.setCursor(1, 1);
   display.setTextSize(1);
   display.write(char(ICONoutput));
   display.setTextSize(2);
-  display.print(map(PID_output, 0, 255, 0, 100));
-  display.print(F("%"));
+  display.print(map(outVal, 0, 255, 0, 100));
+  display.print(F("% "));
+  //display.setTextSize(1);
+  if (HYSTwithin && !DESTaction) display.write(char(ICONmaxRange));
+  if (DESTaction && !PID_output) display.write(char(ICONminRange));
   //display online temperature
   display.setCursor(1, 17);
   display.setTextSize(1);
@@ -67,7 +71,7 @@ void UImain() { // main screen
       display.fillRect(0, 0, map(constPower, 255, 0, 0, 127), display.height() / 2, SSD1306_INVERSE);
       display.fillRect(0, (display.height() / 2), map(tempIntC, 0, 600, 0, 127), display.height() / 2, SSD1306_INVERSE);
     }*/
-  display.display(); // Update screen with each newly-drawn rectangle
+  //display.display(); // Update screen with each newly-drawn rectangle
 }
 
 void UIpid() { // PIDx-parameter set screen
@@ -87,7 +91,7 @@ void UIpid() { // PIDx-parameter set screen
   }
   int hundrKpid = kpid / 100;
   int centiKpid = kpid - int(hundrKpid * 100);
-  display.clearDisplay();
+  //display.clearDisplay();
   { // header math
     display.setCursor(0, 0);
     display.setTextSize(1);
@@ -178,7 +182,7 @@ void UIpid() { // PIDx-parameter set screen
       if (kpid <= 100) display.fillRect(0, SCREEN_HEIGHT / 2 , map(kpid, 0, 100, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
       if (kpid > 100) display.fillRect(SCREEN_WIDTH - map(kpid, 100, 10000, 0, 127), SCREEN_HEIGHT / 2 , map(kpid, 100, 10000, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
     }*/
-  display.display();
+  //display.display();
 }
 
 void UIp() { // P-parameter set screen
@@ -186,24 +190,24 @@ void UIp() { // P-parameter set screen
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     kp = scrollInt(kp, encIncrement, 0, 999, 1); // roll kp by 1 within 0...999
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   UIpidBar(); // display pid bar to the left
-/*  // P display:
-  display.setTextSize(2);
-  display.setCursor(58, 0); display.print(kp); //x50
-  display.setTextSize(1);
-  display.setCursor(50, 3); display.print(F("P")); //x90
-  display.setCursor(98, 3); display.print(PID_p * -1);
-  // I display
-  display.setCursor(68, 16); display.print(ki); //x60
-  display.setCursor(50, 16); display.print(F("I")); //x90
-  display.setCursor(98, 16); display.print(PID_i * -1);
-  // D display
-  display.setCursor(68, 24); display.print(kd); //x60
-  display.setCursor(50, 24); display.print(F("D")); //x90
-  display.setCursor(98, 24); display.print(PID_d * -1);
-*/
-  display.display();
+  /*  // P display:
+    display.setTextSize(2);
+    display.setCursor(58, 0); display.print(kp); //x50
+    display.setTextSize(1);
+    display.setCursor(50, 3); display.print(F("P")); //x90
+    display.setCursor(98, 3); display.print(PID_p * -1);
+    // I display
+    display.setCursor(68, 16); display.print(ki); //x60
+    display.setCursor(50, 16); display.print(F("I")); //x90
+    display.setCursor(98, 16); display.print(PID_i * -1);
+    // D display
+    display.setCursor(68, 24); display.print(kd); //x60
+    display.setCursor(50, 24); display.print(F("D")); //x90
+    display.setCursor(98, 24); display.print(PID_d * -1);
+  */
+  //display.display();
 }
 
 void UIi() {
@@ -211,24 +215,24 @@ void UIi() {
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     ki = scrollInt(ki, encIncrement, 0, 999, 1); // roll ki by 1 within 0...999
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   UIpidBar(); // display pid bar to the left
-/*  // P display:
-  display.setCursor(68, 0); display.print(kp);
-  display.setCursor(50, 0); display.print(F("P"));
-  display.setCursor(98, 0); display.print(PID_p * -1);
-  // I display
-  display.setTextSize(2);
-  display.setCursor(58, 8); display.print(ki);
-  display.setTextSize(1);
-  display.setCursor(50, 12); display.print(F("I"));
-  display.setCursor(98, 12); display.print(PID_i * -1);
-  // D display
-  display.setCursor(68, 24); display.print(kd);
-  display.setCursor(50, 24); display.print(F("D"));
-  display.setCursor(98, 24); display.print(PID_d * -1);
+  /*  // P display:
+    display.setCursor(68, 0); display.print(kp);
+    display.setCursor(50, 0); display.print(F("P"));
+    display.setCursor(98, 0); display.print(PID_p * -1);
+    // I display
+    display.setTextSize(2);
+    display.setCursor(58, 8); display.print(ki);
+    display.setTextSize(1);
+    display.setCursor(50, 12); display.print(F("I"));
+    display.setCursor(98, 12); display.print(PID_i * -1);
+    // D display
+    display.setCursor(68, 24); display.print(kd);
+    display.setCursor(50, 24); display.print(F("D"));
+    display.setCursor(98, 24); display.print(PID_d * -1);
   */
-  display.display();
+  //display.display();
 }
 
 void UId() {
@@ -236,25 +240,25 @@ void UId() {
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     kd = scrollInt(kd, encIncrement, 0, 999, 1); // roll kd by 1 within 0...999
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   UIpidBar(); // display pid bar to the left
   /*
-  // P display:
-  display.setCursor(68, 0); display.print(kp);
-  display.setCursor(50, 0); display.print(F("P"));
-  display.setCursor(98, 0); display.print(PID_p * -1);
-  // I display
-  display.setCursor(68, 8); display.print(ki);
-  display.setCursor(50, 8); display.print(F("I"));
-  display.setCursor(98, 8);  display.print(PID_i * -1);
-  // D display
-  display.setTextSize(2);
-  display.setCursor(58, 16); display.print(kd);
-  display.setTextSize(1);
-  display.setCursor(50, 20); display.print(F("D"));
-  display.setCursor(98, 20); display.print(PID_d * -1);
+    // P display:
+    display.setCursor(68, 0); display.print(kp);
+    display.setCursor(50, 0); display.print(F("P"));
+    display.setCursor(98, 0); display.print(PID_p * -1);
+    // I display
+    display.setCursor(68, 8); display.print(ki);
+    display.setCursor(50, 8); display.print(F("I"));
+    display.setCursor(98, 8);  display.print(PID_i * -1);
+    // D display
+    display.setTextSize(2);
+    display.setCursor(58, 16); display.print(kd);
+    display.setTextSize(1);
+    display.setCursor(50, 20); display.print(F("D"));
+    display.setCursor(98, 20); display.print(PID_d * -1);
   */
-  display.display();
+  //display.display();
 }
 
 void UIpowerMin() { // set min power
@@ -262,20 +266,20 @@ void UIpowerMin() { // set min power
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     minPower = scrollInt(minPower, encIncrement, 0, maxPower, 0); // roll minPower by 1 within 0...254
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   UIpowerHead();
   /*
-  display.setTextSize(2);
-  display.setCursor(1, 17);
-  display.print(minPower);
-  display.setTextSize(1);
-  display.setCursor(95, 21);
-  display.print(maxPower);
+    display.setTextSize(2);
+    display.setCursor(1, 17);
+    display.print(minPower);
+    display.setTextSize(1);
+    display.setCursor(95, 21);
+    display.print(maxPower);
   */
   if (setMode) { // head barline for minPower
     display.fillRect(0, SCREEN_HEIGHT / 2, minPower / 2, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void UIpowerMax() { // set max power
@@ -283,20 +287,46 @@ void UIpowerMax() { // set max power
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     maxPower = scrollInt(maxPower, encIncrement, minPower, 255, 0); // roll maxPower by 1 within 0...254
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   UIpowerHead();
   /*
-  display.setTextSize(1);
-  display.setCursor(5, 21);
-  display.print(minPower);
-  display.setTextSize(2);
-  display.setCursor(90, 17);
-  display.print(maxPower);
+    display.setTextSize(1);
+    display.setCursor(5, 21);
+    display.print(minPower);
+    display.setTextSize(2);
+    display.setCursor(90, 17);
+    display.print(maxPower);
   */
   if (setMode) { // head barline for maxPower
     display.fillRect((maxPower / 2), SCREEN_HEIGHT / 2, SCREEN_WIDTH - (maxPower / 2), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
+}
+
+void UIdestagTime() {
+  if (encoderAction && setMode) { // adjust max power
+    encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
+    DESTtime = scrollInt(DESTtime, encIncrement, 0, 1800, 1); // roll DESTtime 0...1800sec (30min)
+  }
+  //display.clearDisplay();
+  UIdestagHead();
+  if (setMode) { // head barline for DESTtime
+    display.fillRect(0, SCREEN_HEIGHT / 2, map(DESTtime, 0, 1800, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  }
+  //display.display();
+}
+
+void UIdestagPeriod() {
+  if (encoderAction && setMode) { // adjust max power
+    encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
+    DESTperiod = scrollInt(DESTperiod, encIncrement, 0, 1440, 1); // roll DESTperiod 0...1440min (24hr)
+  }
+  //display.clearDisplay();
+  UIdestagHead();
+  if (setMode) { // head barline for DESTtime
+    display.fillRect(0, SCREEN_HEIGHT / 2, map(DESTperiod, 0, 1440, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+  }
+  //display.display();
 }
 
 #define FOUR_CHAR_STRING_LEN 50
@@ -305,7 +335,7 @@ void UIsetLoad() { // load settings screen
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     setMode = scrollInt(setMode, encIncrement, 1, 2, 1); // roll menu
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(17, 0);
   display.print(F("SETTINGS"));
@@ -327,7 +357,7 @@ void UIsetLoad() { // load settings screen
       display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
       break;
   }
-  display.display();
+  //display.display();
 }
 
 void UIsetSave() { // save settings screen
@@ -335,7 +365,7 @@ void UIsetSave() { // save settings screen
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     setMode = scrollInt(setMode, encIncrement, 1, 2, 1); // roll menu
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(17, 0);
   display.print(F("AUTOSAVE"));
@@ -357,7 +387,7 @@ void UIsetSave() { // save settings screen
       display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
       break;
   }
-  display.display();
+  //display.display();
 }
 
 void UIstoreScreen() { // store screen mode when goto sleep?
@@ -365,7 +395,7 @@ void UIstoreScreen() { // store screen mode when goto sleep?
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     setMode = scrollInt(setMode, encIncrement, 1, 2, 1); // roll menu
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(5, 1);
   display.print(F("MEM SCREEN"));
@@ -387,7 +417,7 @@ void UIstoreScreen() { // store screen mode when goto sleep?
       display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
       break;
   }
-  display.display();
+  //display.display();
 }
 
 void UIconstMode() { // constant speed set
@@ -401,7 +431,7 @@ void UIconstMode() { // constant speed set
   if (!setMode && isConstPower) {
     isConstPower = 0;
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   //HEADER:
   display.setTextSize(2);
   display.setCursor(17, 1);
@@ -429,7 +459,7 @@ void UIconstMode() { // constant speed set
   else {
     display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void UItimeout() { // set screen timeout
@@ -437,7 +467,7 @@ void UItimeout() { // set screen timeout
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     screenTimeout = scrollInt(screenTimeout, encIncrement, 5, 600, 0); // increment screenTimeout
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(22, 1);
   display.print(F("TIMEOUT"));
@@ -451,7 +481,7 @@ void UItimeout() { // set screen timeout
   else {
     display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void UItAdj() { // set tempAdj (shifts sensor value)
@@ -459,7 +489,7 @@ void UItAdj() { // set tempAdj (shifts sensor value)
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
     tempAdj = scrollInt(tempAdj, encIncrement, -90, +90, 0); // increment by 0.1degree
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(1, 1);
   display.print(F("TEMP"));
@@ -512,7 +542,7 @@ void UItAdj() { // set tempAdj (shifts sensor value)
   else { // head bar
     display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void UIscreenRotate() {
@@ -528,7 +558,7 @@ void UIscreenRotate() {
       display.setRotation(2);
     }
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   if (!setMode) {
     display.setTextSize(2);
     display.setCursor(13, 1);
@@ -549,16 +579,15 @@ void UIscreenRotate() {
       display.print(F("RIGHT>"));
     }
   }
-  display.display();
+  //display.display();
 }
 
 #define DEGREE_PER_PIXEL 1   // 
-
 void UIplotTemp() {
-  display.clearDisplay();
+  //display.clearDisplay();
   if (encoderAction  && setMode) { // increment tempAdj value
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
-    keepSample = scrollInt(keepSample, encIncrement, 1, 600, 0); // increment plotSampleDensity
+    keepSample = scrollInt(keepSample, encIncrement, 1, 1200, 0); // increment plotSampleDensity
     //display.fillRect(0, 0, 21, 8, SSD1306_BLACK);
   }
   int rangeMin = screenTempArray[arrayIndex]; // setting range to actual data point
@@ -620,13 +649,13 @@ void UIplotTemp() {
       display.drawPixel(i, setPlane, SSD1306_INVERSE);
     }
   }
-  display.display();
+  //display.display();
 }
 
 void UIplotPid() {
   if (encoderAction  && setMode) { // increment tempAdj value
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
-    keepSample = scrollInt(keepSample, encIncrement, 1, 600, 0); // increment plotSampleDensity
+    keepSample = scrollInt(keepSample, encIncrement, 1, 1200, 0); // increment plotSampleDensity
     //display.fillRect(0, 0, 21, 8, SSD1306_BLACK);
   }
   int rangeMin = 0;
@@ -652,7 +681,7 @@ void UIplotPid() {
       rangeMax = rangeMin + (SCREEN_HEIGHT);
     }
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(1, 1);
   display.write(char(ICONminRange));
@@ -666,13 +695,13 @@ void UIplotPid() {
     display.print(int(keepSample));
     display.setCursor(1, 16);
     display.write(char(ICONoutput));
-    display.print(PID_output);
+    display.print(outVal);
   }
   else {
     display.setCursor(1, 9);
     display.write(char(ICONoutput));
     display.setTextSize(2);
-    display.print(PID_output);
+    display.print(outVal);
     //display.print(F("%"));
   }
   byte minValY = map(minPower, rangeMin, rangeMax, SCREEN_HEIGHT - 1, 0);
@@ -689,29 +718,29 @@ void UIplotPid() {
     if (minValY >= 0 && minValY < SCREEN_HEIGHT - 1)display.drawPixel(i, minValY, SSD1306_INVERSE);
     if (maxValY >= 0 && maxValY < SCREEN_HEIGHT - 1)display.drawPixel(i, maxValY, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void UIhysteresisTime() {
   if (encoderAction  && setMode) { // increment value
     encIncrement = nullEncoder(); // retrieve increment data and reset encoder state/flag
-    hysteresisTimeS = scrollInt(hysteresisTimeS, encIncrement, 0, 3600, 1); // increment by 1sec
+    HYSTtime = scrollInt(HYSTtime, encIncrement, 0, 3600, 1); // increment by 1sec
   }
-  display.clearDisplay();
+  //display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(4, 1);
   display.print(F("HYSTERESIS"));
   display.setCursor(70, 17);
-  display.print(hysteresisTimeS);
+  display.print(HYSTtime);
   display.setTextSize(1);
   display.print(F("s"));
   if (setMode) { // head barline
-    display.fillRect(0, SCREEN_HEIGHT / 2, truncInt(hysteresisTimeS, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
+    display.fillRect(0, SCREEN_HEIGHT / 2, truncInt(HYSTtime, 0, 127), SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
   else {
     display.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, SSD1306_INVERSE);
   }
-  display.display();
+  //display.display();
 }
 
 void splashScreen() {
