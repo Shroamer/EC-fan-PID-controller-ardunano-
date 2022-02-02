@@ -1,11 +1,13 @@
 # EC-fan-PID-controller-ardunano-
-PID controller to govern EC fan (0...10v PWM control line) as a PID temperature controller. 
+**PID controller**
+Govern EC fan (0...10v PWM control line) as a PID temperature controller. 
+Based on arduino nano v3 (atmega328) dev.board
 Termperature sensor is ds18b20 on 1-wire
 UI oled screen 128x32 ssd1306 on i2c
 UI input encoder with switch on interrupts
 
-r2.2.5
-beta (in test)
+## r2.2.5
+**beta (in test)**
  + fixed hysteresis function (don't let fan to turn on for some time after it turned off)
  + added destagnation function (turn fan to minPower for some time if no fan activity was found past some time)
  + power icon now can morph to HYST and DEST icons if in these modes.
@@ -24,23 +26,23 @@ beta (in test)
 - Goal temperature.
 - PID variables: **kP**, **kI**, **kD** and overall **multiplier** (0.01...100).
 - There is a **P+I+D math display** on multiplier screen for you to have deeper understanding of how your config works.
-- MinPower (some fans can't run at less than 5 or 10%)
-- MaxPower (sometimes you don't want fan to go full speed)
+- **MinPower** (some fans can't run at less than 5 or 10%)
+- **MaxPower** (sometimes you don't want fan to go full speed)
 - You can set **hysteresys delay** in seconds. Think of it as a _cool-down time you need to wait after turning fan off before turning it on again_. It prevents fan from going fast on-off at a margin values.
-- There is a destagnant ventilation function that can run fan for a while if no fan activity was found recently. This prevents air from stagnation even there's no need to cool.
+- There is a **destagnant ventilation** function that can run fan for a while if no fan activity was found recently. _This prevents air from stagnation even there's no need to cool._
 - **Temperature offset** can be entered -9.0...9.0^ (0.1^ increment) if your sensor lies linearly.
 - **Display timeout** 0...600sec so oled display will last longer.
 - You can **turn image 180^** and encoder reading will be inverted.
 - Manual and automatic **store setting** to EEPROM on case of power loss.
-- You can avoid EEPROM degradation restricting to store current screen. It is convenient while configuring, but isn't needed after.
+- You can avoid EEPROM degradation restricting to store current screen. _It is convenient while configuring, but isn't needed after._
 - You can play with PId parameters with AUSTOISAVE OFF, and then **restore settings from EEPROM**, or save new settings if new config is better.
 - **Temperature graph plot** show last 128 readings for diagnostics.
 - **PIDoutput graph plot** show last 128 output values, so you can diagnose and configure PID.
 - **Plot sampling rate** can be adjusted averaging up to 250 reading in a single data line in plot, so you can log longer periods. _(sample rate is approx. 3rps)_
 - **Automatic vertical range** for graph plots. _Set-mode will change it to full range._
 - You can **manually set output rate**. This mode is stored into EEPROM to **return after power loss**. 
-- Device enters manual mode with last stored value **if temp. sensor is lost**.
-- Device enters manual mode **if screen has failed**.
+- Device maintains manual mode with last stored value **if temp.sensor is lost**.
+- Device maintains manual mode **if screen has failed**.
 
 ![EC-FAN-pid controller r2 2_bb](https://user-images.githubusercontent.com/98293163/150709377-43f2c787-2473-4872-998f-7ee267ae28f0.png)
 ![EC-FAN-pid controller r2 2_schem](https://user-images.githubusercontent.com/98293163/150709451-bd5a9352-163f-49d2-b703-9abf2e3a6ef2.png)
